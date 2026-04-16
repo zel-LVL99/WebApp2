@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Form</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="form-container">
+    <h1>Order Form</h1>
+    <div id="selectedItem" class="selected-item hidden"></div>
+    <form id="orderForm">
+      <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName" name="firstName" placeholder="Enter your first name" required />
+      </div>
+      <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" name="lastName" placeholder="Enter your last name" required />
+      </div>
+      <div class="form-group">
+        <label for="address">Address</label>
+        <textarea id="address" name="address" placeholder="Enter your address" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="contactNumber">Contact Number</label>
+        <input type="tel" id="contactNumber" name="contactNumber" placeholder="e.g. 123-456-7890" required />
+      </div>
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required />
+      </div>
+      <div class="form-group">
+        <label for="paymentMethod">Payment Method</label>
+        <select id="paymentMethod" name="paymentMethod" required>
+          <option value="">Choose payment method</option>
+          <option value="online">Online Payment</option>
+          <option value="cod">Cash on Delivery</option>
+        </select>
+      </div>
+      <button type="submit" class="submit-button">Submit Order</button>
+    </form>
+    <p class="note">If you clicked "Buy Now" from the homepage, any selected item and quantity appear above.</p>
+  </div>
+  <div id="thankYouModal" class="thank-you-modal hidden">
+    <div class="thank-you-dialog">
+      <p>Thank you! Your order has been submitted.</p>
+      <button type="button" class="submit-button modal-close-button">Close</button>
+    </div>
+  </div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const item = params.get('item');
+    const qty = Math.max(1, Number(params.get('qty')) || 1);
+    if (item) {
+      const itemLabel = {
+        hygiene: 'Hygiene Kit',
+        powerbank: 'Powerbank',
+        solar: 'Solar Panel'
+      }[item] || item;
+      const itemPrices = {
+        hygiene: 9.99,
+        powerbank: 19.99,
+        solar: 29.99
+      };
+      const unitPrice = itemPrices[item] || 0;
+      const deliveryFee = qty > 0 ? 4.99 : 0;
+      const subtotal = unitPrice * qty;
+      const totalAmount = (subtotal + deliveryFee).toFixed(2);
+      const selectedItem = document.getElementById('selectedItem');
+      selectedItem.textContent = `Selected item: ${itemLabel} — Quantity: ${qty} — Delivery fee: $${deliveryFee.toFixed(2)} — Total amount: $${totalAmount}`;
+      selectedItem.style.display = 'block';
+    }
+
+    const orderForm = document.getElementById('orderForm');
+    const thankYouModal = document.getElementById('thankYouModal');
+    const modalCloseButton = thankYouModal.querySelector('.modal-close-button');
+
+    orderForm.addEventListener('submit', event => {
+      event.preventDefault();
+      thankYouModal.classList.remove('hidden');
+    });
+
+    modalCloseButton.addEventListener('click', () => {
+      thankYouModal.classList.add('hidden');
+    });
+
+    thankYouModal.addEventListener('click', event => {
+      if (event.target === thankYouModal) {
+        thankYouModal.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>

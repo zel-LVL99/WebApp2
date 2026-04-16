@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wujin's Shop</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="index-page">
+  <section class="hero">
+    <h1>Be Efficient Everywhere</h1>
+    <p>The important things for natural disasters.</p>
+  </section>
+  <main class="content">
+    <div class="panel">
+      <div class="panel-inner">
+        <div class="panel-left">
+          <h2>Order here</h2>
+          <p>Our simple design makes it easy to choose the best option for your needs. .</p>
+          <a class="button" href="homepage.html">Go to Homepage</a>
+          <img class="logo" src="pictures/logo.png" alt="Wujin's Shop logo" />
+        </div>
+        <aside class="info-card">
+          <h3>Live purchase activity</h3>
+          <div class="metric">
+            <div>
+              <strong id="liveCount">Loading...</strong>
+              <span>people are buying now</span>
+            </div>
+            <div>🔥</div>
+          </div>
+          <div class="metric">
+            <div>
+              <strong>Online or COD</strong>
+              <span>Choose your preferred payment method</span>
+            </div>
+          </div>
+          <div class="metric">
+            <div>
+              <strong>Basic design</strong>
+              <span>Clean layout for easy ordering</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+    <p class="footer">Run `live_count_server.py` with Python and open this page from <strong>http://localhost:8000/index.html</strong> to see the live count refresh.</p>
+  </main>
+  <script>
+    const countEl = document.getElementById('liveCount');
+    const countUrl = window.location.protocol === 'file:'
+      ? 'http://localhost:8000/count'
+      : '/count';
+
+    async function refreshCount() {
+      try {
+        const response = await fetch(countUrl);
+        if (!response.ok) throw new Error('Fetch failed');
+        const data = await response.json();
+        countEl.textContent = data.count.toLocaleString();
+      } catch (error) {
+        countEl.textContent = 'Unavailable';
+        console.error('Live count fetch error:', error);
+      }
+    }
+    refreshCount();
+    setInterval(refreshCount, 3000);
+  </script>
+</body>
+</html>

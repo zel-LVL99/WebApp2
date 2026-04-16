@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Easy Shop</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="homepage">
+  <div class="page-wrapper">
+    <section class="hero">
+      <h1>Wujin's Shop</h1>
+      <p>Choose a product, update its quantity with Python-powered buttons, and send your order to the form.</p>
+    </section>
+
+    <div class="products">
+      <article class="card" data-item="hygiene">
+        <div class="polaroid">
+          <img src="pictures/hygiene kit.png" alt="Hygiene kit" />
+        </div>
+        <h2 class="product-name">Hygiene Kit</h2>
+        <p class="product-description">A ready-made hygiene set for daily care and travel convenience.</p>
+        <p class="price">$9.99</p>
+        <div class="quantity-controls">
+          <button class="qty-button" data-action="subtract" data-item="hygiene">-</button>
+          <span class="count-display" id="qty-hygiene">0</span>
+          <button class="qty-button" data-action="add" data-item="hygiene">+</button>
+        </div>
+        <div class="actions">
+          <button class="action-button" onclick="buyNow('hygiene')">Buy Now</button>
+        </div>
+      </article>
+
+      <article class="card" data-item="powerbank">
+        <div class="polaroid">
+          <img src="pictures/powerbank.png" alt="Powerbank" />
+        </div>
+        <h2 class="product-name">Powerbank</h2>
+        <p class="product-description">Portable charging power for your phone and devices while on the move.</p>
+        <p class="price">$19.99</p>
+        <div class="quantity-controls">
+          <button class="qty-button" data-action="subtract" data-item="powerbank">-</button>
+          <span class="count-display" id="qty-powerbank">0</span>
+          <button class="qty-button" data-action="add" data-item="powerbank">+</button>
+        </div>
+        <div class="actions">
+          <button class="action-button" onclick="buyNow('powerbank')">Buy Now</button>
+        </div>
+      </article>
+
+      <article class="card" data-item="solar">
+        <div class="polaroid">
+          <img src="pictures/solar.png" alt="Solar panel" />
+        </div>
+        <h2 class="product-name">Solar Panel</h2>
+        <p class="product-description">A compact solar panel for charging devices cleanly and safely outside.</p>
+        <p class="price">$29.99</p>
+        <div class="quantity-controls">
+          <button class="qty-button" data-action="subtract" data-item="solar">-</button>
+          <span class="count-display" id="qty-solar">0</span>
+          <button class="qty-button" data-action="add" data-item="solar">+</button>
+        </div>
+        <div class="actions">
+          <button class="action-button" onclick="buyNow('solar')">Buy Now</button>
+        </div>
+      </article>
+    </div>
+
+    <div class="cart-summary">
+      <div>
+        <strong>Total items:</strong>
+        <span id="cartTotal">0</span>
+      </div>
+      <div>
+        <strong>Delivery fee:</strong>
+        <span id="deliveryFee">$0.00</span>
+      </div>
+      <div>
+        <strong>Total amount:</strong>
+        <span id="totalAmount">$0.00</span>
+      </div>
+      <div>
+        <strong>Server status:</strong>
+        <span id="serverStatus">Waiting for Python server...</span>
+      </div>
+    </div>
+
+    <p class="note">Use the plus and minus buttons to update item quantities. Then click "Buy Now" to send the selected item to the order form. Run <code>python live_count_server.py</code> from your project folder to enable Python server syncing; if the server is unavailable, the page still works with local cart updates.</p>
+  </div>
+
+  <script>
+    const cartApiUrl = window.location.protocol === 'file:'
+      ? 'http://localhost:8000/cart'
+      : '/cart';
+
+    const cart = {
+      hygiene: 0,
+      powerbank: 0,
+      solar: 0,
+    };
+
+    const itemLabels = {
+      hygiene: 'Hygiene Kit',
+      powerbank: 'Powerbank',
+      solar: 'Solar Panel',
+    };
+
+    const statusEl = document.getElementById('serverStatus');
+    const totalEl = document.getElementById('cartTotal');
+    let serverOnline = null;
+    let serverCartTotals = null;
+
+    const itemPrices = {
+      hygiene: 9.99,
+      powerbank: 19.99,
+      solar: 29.99,
+    };
+
+    const deliveryRate = 4.99;
+    const deliveryThreshold = 0;
+
+    function updateDisplay() {
+      const itemCount = cart.hygiene + cart.powerbank + cart.solar;
+      const subtotal = (cart.hygiene * itemPrices.hygiene)
+        + (cart.powerbank * itemPrices.powerbank)
+        + (cart.solar * itemPrices.solar);
+      const deliveryFee = itemCount > deliveryThreshold ? deliveryRate : 0;
+      const totalAmount = subtotal + deliveryFee;
+
+      totalEl.textContent = serverOnline && serverCartTotals && serverCartTotals.totalItems != null
+        ? serverCartTotals.totalItems
+        : itemCount;
+      document.getElementById('deliveryFee').textContent = serverOnline && serverCartTotals && serverCartTotals.deliveryFee != null
+        ? `$${Number(serverCartTotals.deliveryFee).toFixed(2)}`
+        : `$${deliveryFee.toFixed(2)}`;
+      document.getElementById('totalAmount').textContent = serverOnline && serverCartTotals && serverCartTotals.totalAmount != null
+        ? `$${Number(serverCartTotals.totalAmount).toFixed(2)}`
+        : `$${totalAmount.toFixed(2)}`;
+      document.getElementById('qty-hygiene').textContent = cart.hygiene;
+      document.getElementById('qty-powerbank').textContent = cart.powerbank;
+      document.getElementById('qty-solar').textContent = cart.solar;
+    }
+
+    function setServerStatus(online) {
+      serverOnline = online;
+      statusEl.textContent = online
+        ? 'Python server connected'
+        : 'Python server unavailable — using local cart';
+    }
+
+    async function sendCartRequest(item, action) {
+      try {
+        const response = await fetch(`${cartApiUrl}?item=${encodeURIComponent(item)}&action=${encodeURIComponent(action)}`);
+        if (!response.ok) throw new Error('Server response not OK');
+        const data = await response.json();
+        if (data.cart) {
+          cart.hygiene = data.cart.hygiene;
+          cart.powerbank = data.cart.powerbank;
+          cart.solar = data.cart.solar;
+        }
+        if (data.totalItems != null) {
+          serverCartTotals = {
+            totalItems: data.totalItems,
+            deliveryFee: data.deliveryFee,
+            totalAmount: data.totalAmount,
+          };
+        }
+        if (serverOnline !== true) setServerStatus(true);
+      } catch (error) {
+        if (serverOnline !== false) setServerStatus(false);
+        serverCartTotals = null;
+        console.warn('Cart request failed:', error);
+        if (action === 'add') cart[item] += 1;
+        if (action === 'subtract' && cart[item] > 0) cart[item] -= 1;
+      }
+      updateDisplay();
+    }
+
+    function buyNow(item) {
+      const quantity = cart[item] || 1;
+      window.location.href = `orderform.html?item=${item}&qty=${quantity}`;
+    }
+
+    document.querySelectorAll('.qty-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const item = button.dataset.item;
+        const action = button.dataset.action;
+        sendCartRequest(item, action);
+      });
+    });
+
+    updateDisplay();
+  </script>
+</body>
+</html>
