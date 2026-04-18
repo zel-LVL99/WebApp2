@@ -27,7 +27,7 @@
           <button class="qty-button" data-action="add" data-item="hygiene">+</button>
         </div>
         <div class="actions">
-          <button class="action-button" onclick="buyNow('hygiene')">Buy Now</button>
+          <button class="action-button" onclick="addToCart('hygiene')">Add to Cart</button>
         </div>
       </article>
 
@@ -44,7 +44,7 @@
           <button class="qty-button" data-action="add" data-item="powerbank">+</button>
         </div>
         <div class="actions">
-          <button class="action-button" onclick="buyNow('powerbank')">Buy Now</button>
+          <button class="action-button" onclick="addToCart('powerbank')">Add to Cart</button>
         </div>
       </article>
 
@@ -61,7 +61,7 @@
           <button class="qty-button" data-action="add" data-item="solar">+</button>
         </div>
         <div class="actions">
-          <button class="action-button" onclick="buyNow('solar')">Buy Now</button>
+          <button class="action-button" onclick="addToCart('solar')">Add to Cart</button>
         </div>
       </article>
     </div>
@@ -83,6 +83,7 @@
         <strong>Server status:</strong>
         <span id="serverStatus">Waiting for Python server...</span>
       </div>
+      <button class="action-button" onclick="buyNow()">Buy Now</button>
     </div>
 
     <p class="note">Use the plus and minus buttons to update item quantities. Then click "Buy Now" to send the selected item to the order form. Run <code>python live_count_server.py</code> from your project folder to enable Python server syncing; if the server is unavailable, the page still works with local cart updates.</p>
@@ -176,10 +177,29 @@
       updateDisplay();
     }
 
-    function buyNow(item) {
-      const quantity = cart[item] || 1;
-      window.location.href = `orderform.html?item=${item}&qty=${quantity}`;
-    }
+    function buyNow() {
+  const params = new URLSearchParams();
+
+  params.set('hygiene', cart.hygiene);
+  params.set('powerbank', cart.powerbank);
+  params.set('solar', cart.solar);
+
+  const totalItems = cart.hygiene + cart.powerbank + cart.solar;
+
+  const subtotal =
+    cart.hygiene * itemPrices.hygiene +
+    cart.powerbank * itemPrices.powerbank +
+    cart.solar * itemPrices.solar;
+
+  const deliveryFee = totalItems > 0 ? deliveryRate : 0;
+  const totalAmount = subtotal + deliveryFee;
+
+  params.set('totalItems', totalItems);
+  params.set('deliveryFee', deliveryFee.toFixed(2));
+  params.set('totalAmount', totalAmount.toFixed(2));
+
+  window.location.href = `orderform.html?${params.toString()}`;
+}
 
     document.querySelectorAll('.qty-button').forEach(button => {
       button.addEventListener('click', () => {
