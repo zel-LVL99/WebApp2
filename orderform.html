@@ -50,28 +50,31 @@
     </div>
   </div>
   <script>
+
     const params = new URLSearchParams(window.location.search);
-    const item = params.get('item');
-    const qty = Math.max(1, Number(params.get('qty')) || 1);
-    if (item) {
-      const itemLabel = {
-        hygiene: 'Hygiene Kit',
-        powerbank: 'Powerbank',
-        solar: 'Solar Panel'
-      }[item] || item;
-      const itemPrices = {
-        hygiene: 9.99,
-        powerbank: 19.99,
-        solar: 29.99
-      };
-      const unitPrice = itemPrices[item] || 0;
-      const deliveryFee = qty > 0 ? 4.99 : 0;
-      const subtotal = unitPrice * qty;
-      const totalAmount = (subtotal + deliveryFee).toFixed(2);
-      const selectedItem = document.getElementById('selectedItem');
-      selectedItem.textContent = `Selected item: ${itemLabel} — Quantity: ${qty} — Delivery fee: $${deliveryFee.toFixed(2)} — Total amount: $${totalAmount}`;
-      selectedItem.style.display = 'block';
-    }
+
+const hygiene = Number(params.get('hygiene')) || 0;
+const powerbank = Number(params.get('powerbank')) || 0;
+const solar = Number(params.get('solar')) || 0;
+
+const totalItems = Number(params.get('totalItems')) || 0;
+const deliveryFee = params.get('deliveryFee') || "0.00";
+const totalAmount = params.get('totalAmount') || "0.00";
+
+const selectedItem = document.getElementById('selectedItem');
+
+if (totalItems > 0) {
+  selectedItem.innerHTML = `
+    <strong>Order Summary:</strong><br>
+    Hygiene Kit: ${hygiene}<br>
+    Powerbank: ${powerbank}<br>
+    Solar Panel: ${solar}<br><br>
+    Total Items: ${totalItems}<br>
+    Delivery Fee: $${deliveryFee}<br>
+    Total Amount: $${totalAmount}
+  `;
+  selectedItem.style.display = 'block';
+}
 
     const orderForm = document.getElementById('orderForm');
     const thankYouModal = document.getElementById('thankYouModal');
@@ -83,14 +86,17 @@
     });
 
     modalCloseButton.addEventListener('click', () => {
-      thankYouModal.classList.add('hidden');
-    });
+  thankYouModal.classList.add('hidden');
+  orderForm.reset();
+  window.location.href = 'index.html';
+});
 
     thankYouModal.addEventListener('click', event => {
       if (event.target === thankYouModal) {
         thankYouModal.classList.add('hidden');
       }
     });
+    
   </script>
 </body>
 </html>
