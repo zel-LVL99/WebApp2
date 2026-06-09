@@ -20,7 +20,7 @@
         </div>
         <h2 class="product-name">Hygiene Kit</h2>
         <p class="product-description">A ready-made hygiene set for daily care and travel convenience.</p>
-        <p class="price">$9.99</p>
+        <p class="price">₱380.00</p>
         <div class="quantity-controls">
           <button class="qty-button" data-action="subtract" data-item="hygiene">-</button>
           <span class="count-display" id="qty-hygiene">0</span>
@@ -37,7 +37,7 @@
         </div>
         <h2 class="product-name">Powerbank</h2>
         <p class="product-description">Portable charging power for your phone and devices while on the move.</p>
-        <p class="price">$19.99</p>
+        <p class="price">₱350.00</p>
         <div class="quantity-controls">
           <button class="qty-button" data-action="subtract" data-item="powerbank">-</button>
           <span class="count-display" id="qty-powerbank">0</span>
@@ -54,7 +54,7 @@
         </div>
         <h2 class="product-name">Solar Panel</h2>
         <p class="product-description">A compact solar panel for charging devices cleanly and safely outside.</p>
-        <p class="price">$29.99</p>
+        <p class="price">₱750.00</p>
         <div class="quantity-controls">
           <button class="qty-button" data-action="subtract" data-item="solar">-</button>
           <span class="count-display" id="qty-solar">0</span>
@@ -73,11 +73,11 @@
       </div>
       <div>
         <strong>Delivery fee:</strong>
-        <span id="deliveryFee">$0.00</span>
+        <span id="deliveryFee">₱0.00</span>
       </div>
       <div>
         <strong>Total amount:</strong>
-        <span id="totalAmount">$0.00</span>
+        <span id="totalAmount">₱0.00</span>
       </div>
       <div>
         <strong>Server status:</strong>
@@ -112,9 +112,9 @@
     let serverCartTotals = null;
 
     const itemPrices = {
-      hygiene: 9.99,
-      powerbank: 19.99,
-      solar: 29.99,
+      hygiene: 380.00,
+      powerbank: 350.00,
+      solar: 750.00,
     };
 
     const deliveryRate = 4.99;
@@ -131,12 +131,15 @@
       totalEl.textContent = serverOnline && serverCartTotals && serverCartTotals.totalItems != null
         ? serverCartTotals.totalItems
         : itemCount;
+
       document.getElementById('deliveryFee').textContent = serverOnline && serverCartTotals && serverCartTotals.deliveryFee != null
-        ? `$${Number(serverCartTotals.deliveryFee).toFixed(2)}`
-        : `$${deliveryFee.toFixed(2)}`;
+        ? `₱${Number(serverCartTotals.deliveryFee).toFixed(2)}`
+        : `₱${deliveryFee.toFixed(2)}`;
+
       document.getElementById('totalAmount').textContent = serverOnline && serverCartTotals && serverCartTotals.totalAmount != null
-        ? `$${Number(serverCartTotals.totalAmount).toFixed(2)}`
-        : `$${totalAmount.toFixed(2)}`;
+        ? `₱${Number(serverCartTotals.totalAmount).toFixed(2)}`
+        : `₱${totalAmount.toFixed(2)}`;
+
       document.getElementById('qty-hygiene').textContent = cart.hygiene;
       document.getElementById('qty-powerbank').textContent = cart.powerbank;
       document.getElementById('qty-solar').textContent = cart.solar;
@@ -178,28 +181,28 @@
     }
 
     function buyNow() {
-  const params = new URLSearchParams();
+      const params = new URLSearchParams();
 
-  params.set('hygiene', cart.hygiene);
-  params.set('powerbank', cart.powerbank);
-  params.set('solar', cart.solar);
+      params.set('hygiene', cart.hygiene);
+      params.set('powerbank', cart.powerbank);
+      params.set('solar', cart.solar);
 
-  const totalItems = cart.hygiene + cart.powerbank + cart.solar;
+      const totalItems = cart.hygiene + cart.powerbank + cart.solar;
 
-  const subtotal =
-    cart.hygiene * itemPrices.hygiene +
-    cart.powerbank * itemPrices.powerbank +
-    cart.solar * itemPrices.solar;
+      const subtotal =
+        cart.hygiene * itemPrices.hygiene +
+        cart.powerbank * itemPrices.powerbank +
+        cart.solar * itemPrices.solar;
 
-  const deliveryFee = totalItems > 0 ? deliveryRate : 0;
-  const totalAmount = subtotal + deliveryFee;
+      const deliveryFee = totalItems > 0 ? deliveryRate : 0;
+      const totalAmount = subtotal + deliveryFee;
 
-  params.set('totalItems', totalItems);
-  params.set('deliveryFee', deliveryFee.toFixed(2));
-  params.set('totalAmount', totalAmount.toFixed(2));
+      params.set('totalItems', totalItems);
+      params.set('deliveryFee', deliveryFee.toFixed(2));
+      params.set('totalAmount', totalAmount.toFixed(2));
 
-  window.location.href = `orderform.html?${params.toString()}`;
-}
+      window.location.href = `orderform.html?${params.toString()}`;
+    }
 
     document.querySelectorAll('.qty-button').forEach(button => {
       button.addEventListener('click', () => {
