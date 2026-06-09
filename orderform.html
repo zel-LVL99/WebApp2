@@ -10,27 +10,33 @@
   <div class="form-container">
     <h1>Order Form</h1>
     <div id="selectedItem" class="selected-item hidden"></div>
+
     <form id="orderForm">
       <div class="form-group">
         <label for="firstName">First Name</label>
         <input type="text" id="firstName" name="firstName" placeholder="Enter your first name" required />
       </div>
+
       <div class="form-group">
         <label for="lastName">Last Name</label>
         <input type="text" id="lastName" name="lastName" placeholder="Enter your last name" required />
       </div>
+
       <div class="form-group">
         <label for="address">Address</label>
         <textarea id="address" name="address" placeholder="Enter your address" required></textarea>
       </div>
+
       <div class="form-group">
         <label for="contactNumber">Contact Number</label>
         <input type="tel" id="contactNumber" name="contactNumber" placeholder="e.g. 123-456-7890" required />
       </div>
+
       <div class="form-group">
         <label for="email">Email Address</label>
         <input type="email" id="email" name="email" placeholder="you@example.com" required />
       </div>
+
       <div class="form-group">
         <label for="paymentMethod">Payment Method</label>
         <select id="paymentMethod" name="paymentMethod" required>
@@ -39,42 +45,45 @@
           <option value="cod">Cash on Delivery</option>
         </select>
       </div>
+
       <button type="submit" class="submit-button">Submit Order</button>
     </form>
+
     <p class="note">If you clicked "Buy Now" from the homepage, any selected item and quantity appear above.</p>
   </div>
+
   <div id="thankYouModal" class="thank-you-modal hidden">
     <div class="thank-you-dialog">
       <p>Thank you! Your order has been submitted.</p>
       <button type="button" class="submit-button modal-close-button">Close</button>
     </div>
   </div>
-  <script>
 
+  <script>
     const params = new URLSearchParams(window.location.search);
 
-const hygiene = Number(params.get('hygiene')) || 0;
-const powerbank = Number(params.get('powerbank')) || 0;
-const solar = Number(params.get('solar')) || 0;
+    const hygiene = Number(params.get('hygiene')) || 0;
+    const powerbank = Number(params.get('powerbank')) || 0;
+    const solar = Number(params.get('solar')) || 0;
 
-const totalItems = Number(params.get('totalItems')) || 0;
-const deliveryFee = params.get('deliveryFee') || "0.00";
-const totalAmount = params.get('totalAmount') || "0.00";
+    const totalItems = Number(params.get('totalItems')) || 0;
+    const deliveryFee = params.get('deliveryFee') || "0.00";
+    const totalAmount = params.get('totalAmount') || "0.00";
 
-const selectedItem = document.getElementById('selectedItem');
+    const selectedItem = document.getElementById('selectedItem');
 
-if (totalItems > 0) {
-  selectedItem.innerHTML = `
-    <strong>Order Summary:</strong><br>
-    Hygiene Kit: ${hygiene}<br>
-    Powerbank: ${powerbank}<br>
-    Solar Panel: ${solar}<br><br>
-    Total Items: ${totalItems}<br>
-    Delivery Fee: $${deliveryFee}<br>
-    Total Amount: $${totalAmount}
-  `;
-  selectedItem.style.display = 'block';
-}
+    if (totalItems > 0) {
+      selectedItem.innerHTML = `
+        <strong>Order Summary:</strong><br>
+        Hygiene Kit: ${hygiene}<br>
+        Powerbank: ${powerbank}<br>
+        Solar Panel: ${solar}<br><br>
+        Total Items: ${totalItems}<br>
+        Delivery Fee: ₱${deliveryFee}<br>
+        Total Amount: ₱${totalAmount}
+      `;
+      selectedItem.style.display = 'block';
+    }
 
     const orderForm = document.getElementById('orderForm');
     const thankYouModal = document.getElementById('thankYouModal');
@@ -86,17 +95,16 @@ if (totalItems > 0) {
     });
 
     modalCloseButton.addEventListener('click', () => {
-  thankYouModal.classList.add('hidden');
-  orderForm.reset();
-  window.location.href = 'index.html';
-});
+      thankYouModal.classList.add('hidden');
+      orderForm.reset();
+      window.location.href = 'index.html';
+    });
 
     thankYouModal.addEventListener('click', event => {
       if (event.target === thankYouModal) {
         thankYouModal.classList.add('hidden');
       }
     });
-    
   </script>
 </body>
 </html>
